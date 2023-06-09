@@ -43,7 +43,9 @@ class Channel:
 
     def print_info(self) -> None:
         """Выводит в консоль информацию о канале."""
-        print(f"id канала: '{self.__channel_id}'")
+        # print(f"id канала: '{self.__channel_id}'")
+        # print(self.__channel)
+        print(json.dumps(self.__channel, indent=2, ensure_ascii=False))
 
     @classmethod
     def get_service(cls):
@@ -58,6 +60,5 @@ class Channel:
         """Метод, сохраняющий в файл значения атрибутов экземпляра Channel"""
         with open(filename, 'w') as file:
             file.write(json.dumps(self.__channel, indent=2, ensure_ascii=False))
-
 
 
