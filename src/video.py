@@ -51,7 +51,8 @@ class Video(Channel):
     def print_info(self) -> None:
         """Выводит в консоль информацию о канале."""
         print(f"id канала: '{self.__video_id}'")
-        print(self.__video)
+        # print(self.__video)
+        print(json.dumps(self.__video, indent=2, ensure_ascii=False))
 
 
 class PLVideo(Video):
