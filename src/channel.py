@@ -69,7 +69,8 @@ class Channel:
     def print_info(self) -> None:
         """Выводит в консоль информацию о канале."""
         print(f"id канала: '{self.__channel_id}'")
-        print(self.__channel)
+        # print(self.__channel)
+        print(json.dumps(self.__channel, indent=2, ensure_ascii=False))
 
     @classmethod
     def get_service(cls):
