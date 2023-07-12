@@ -25,6 +25,12 @@ class Channel:
         self.__video_count = self.__channel['items'][0]['statistics']['videoCount']  # количество видео
         self.__view_count = self.__channel['items'][0]['statistics']['viewCount']  # общее количество просмотров
 
+        # данные по плейлистам канала
+        self.__channel_playlists = self.__youtube.playlists().list(channelId=channel_id,
+                                                                   part='contentDetails,snippet',
+                                                                   maxResults=50,
+                                                                   ).execute()
+
     def __str__(self):
         return f"'{self.__title} ({self.__url})'"
         # 'MoscowPython (https://www.youtube.com/channel/UC-OVMPlMA3-YCIeg4z5z23A)'
@@ -85,3 +91,11 @@ class Channel:
         """Метод, сохраняющий в файл значения атрибутов экземпляра Channel"""
         with open(filename, 'w') as file:
             file.write(json.dumps(self.__channel, indent=2, ensure_ascii=False))
+
+    def playlist(self, playlist_id):
+        """Функция, возвращающая данные плейлиста канала по его id"""
+        for item in self.__channel_playlists['items']:
+            if item['id'] == playlist_id:
+                return item
+
+        return None
