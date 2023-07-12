@@ -1,5 +1,7 @@
+from datetime import datetime, timedelta
 from src.channel import Channel
 import json
+import isodate
 
 
 class Video(Channel):
@@ -19,6 +21,10 @@ class Video(Channel):
         self.__url = f"https://youtu.be/{self.__video_id}"  # ссылка на видео
         self.__view_count = self.__video['items'][0]['statistics']['viewCount']  # количество просмотров
         self.__like_count = self.__video['items'][0]['statistics']['likeCount']  # количество лайков
+
+        # длительность видео
+        self.__duration = timedelta(
+            seconds=isodate.parse_duration(self.__video['items'][0]['contentDetails']['duration']).total_seconds())
 
     def __str__(self):
         return f"{self.__title}"
@@ -42,6 +48,10 @@ class Video(Channel):
     @property
     def like_count(self):
         return self.__like_count
+
+    @property
+    def duration(self) -> timedelta:
+        return self.__duration
 
     def to_json(self, filename):
         """Метод, сохраняющий в файл значения атрибутов экземпляра Video"""
@@ -73,5 +83,3 @@ class PLVideo(Video):
             super().__init__(video_id)
         else:
             raise Exception(f"В плей-листе c id '{self.__playlist_id}' отсутствует видео с id {video_id}")
-
-
