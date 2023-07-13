@@ -8,23 +8,38 @@ class Video(Channel):
     """Класс для видео ютуб-канала"""
 
     def __init__(self, video_id: str) -> None:
-        # получение данных видео по его id
-        self.__video = self.__class__.get_service().videos().list(part='snippet,statistics,contentDetails,topicDetails',
-                                                                  id=video_id
-                                                                  ).execute()
-
-        # инициализация класса 'Channel'
-        super().__init__(self.__video['items'][0]['snippet']['channelId'])
-
         self.__video_id = video_id  # id видео
-        self.__title = self.__video['items'][0]['snippet']['title']  # название видео
-        self.__url = f"https://youtu.be/{self.__video_id}"  # ссылка на видео
-        self.__view_count = self.__video['items'][0]['statistics']['viewCount']  # количество просмотров
-        self.__like_count = self.__video['items'][0]['statistics']['likeCount']  # количество лайков
 
-        # длительность видео
-        self.__duration = timedelta(
-            seconds=isodate.parse_duration(self.__video['items'][0]['contentDetails']['duration']).total_seconds())
+        try:
+            # получение данных видео по его id
+            self.__video = self.__class__.get_service().videos().list(part='snippet,statistics,contentDetails,'
+                                                                           'topicDetails',
+                                                                      id=self.__video_id
+                                                                      ).execute()
+
+            # инициализация класса 'Channel'
+            super().__init__(self.__video['items'][0]['snippet']['channelId'])
+
+            self.__title = self.__video['items'][0]['snippet']['title']  # название видео
+            self.__url = f"https://youtu.be/{self.__video_id}"  # ссылка на видео
+            self.__view_count = self.__video['items'][0]['statistics']['viewCount']  # количество просмотров
+            self.__like_count = self.__video['items'][0]['statistics']['likeCount']  # количество лайков
+
+            # длительность видео
+            self.__duration = timedelta(
+                seconds=isodate.parse_duration(self.__video['items'][0]['contentDetails']['duration']).total_seconds())
+        except Exception:
+            # сообщение об ошибке
+            print('Не удалось получить данные видео по его id')
+
+            self.__title = None  # название видео
+            self.__url = None  # ссылка на видео
+            self.__view_count = None  # количество просмотров
+            self.__like_count = None  # количество лайков
+            self.__duration = None  # длительность видео
+
+            # инициализация класса 'Channel'
+            super().__init__("")
 
     def __str__(self):
         return f"{self.__title}"

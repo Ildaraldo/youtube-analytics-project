@@ -1,5 +1,4 @@
 import json
-
 from googleapiclient.discovery import build
 import os
 
@@ -11,25 +10,39 @@ class Channel:
         """Экземпляр инициализируется id канала. Дальше все данные будут подтягиваться по API."""
         self.__channel_id = channel_id  # id канала
 
-        # объект для работы с API
-        self.__youtube = self.get_service()
+        try:
+            # объект для работы с API
+            self.__youtube = self.get_service()
 
-        # получение данных канала по его id
-        self.__channel = self.__youtube.channels().list(id=channel_id, part='snippet,statistics,topicDetails').execute()
+            # получение данных канала по его id
+            self.__channel = self.__youtube.channels().list(id=self.__channel_id, part='snippet,statistics,topicDetails').execute()
 
-        # подтягиваем данные с API
-        self.__title = self.__channel['items'][0]['snippet']['title']  # название канала
-        self.__description = self.__channel['items'][0]['snippet']['description']  # описание канала
-        self.__url = f"https://www.youtube.com/channel/{self.__channel['items'][0]['id']}"  # ссылка на канал
-        self.__subscriber_count = self.__channel['items'][0]['statistics']['subscriberCount']  # количество подписчиков
-        self.__video_count = self.__channel['items'][0]['statistics']['videoCount']  # количество видео
-        self.__view_count = self.__channel['items'][0]['statistics']['viewCount']  # общее количество просмотров
+            # подтягиваем данные с API
+            self.__title = self.__channel['items'][0]['snippet']['title']  # название канала
+            self.__description = self.__channel['items'][0]['snippet']['description']  # описание канала
+            self.__url = f"https://www.youtube.com/channel/{self.__channel['items'][0]['id']}"  # ссылка на канал
+            self.__subscriber_count = self.__channel['items'][0]['statistics']['subscriberCount']  # количество подписчиков
+            self.__video_count = self.__channel['items'][0]['statistics']['videoCount']  # количество видео
+            self.__view_count = self.__channel['items'][0]['statistics']['viewCount']  # общее количество просмотров
 
-        # данные по плейлистам канала
-        self.__channel_playlists = self.__youtube.playlists().list(channelId=channel_id,
-                                                                   part='contentDetails,snippet',
-                                                                   maxResults=50,
-                                                                   ).execute()
+            # данные по плейлистам канала
+            self.__channel_playlists = self.__youtube.playlists().list(channelId=self.__channel_id,
+                                                                       part='contentDetails,snippet',
+                                                                       maxResults=50,
+                                                                       ).execute()
+        except Exception:
+            # сообщение об ошибке
+            print('Не удалось получить данные канала по его id')
+
+            self.__youtube = None  # объект для работы с API
+            self.__channel = None
+            self.__title = None  # название канала
+            self.__description = None  # описание канала
+            self.__url = None  # ссылка на канал
+            self.__subscriber_count = None  # количество подписчиков
+            self.__video_count = None  # количество видео
+            self.__view_count = None  # общее количество просмотров
+            self.__channel_playlists = None  # данные по плейлистам канала
 
     def __str__(self):
         return f"'{self.__title} ({self.__url})'"
